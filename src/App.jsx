@@ -1,85 +1,185 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import loginService from "./services/login";
 import Products from "./components/Products";
+import "./App.css";
+import apiAxios from "./services/apiAxios";
 
 function App() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  // Trạng thái cho form đăng nhập
+  const [loginUsername, setLoginUsername] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  // Trạng thái cho form đăng ký
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerUsername, setRegisterUsername] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [showPopUp, setShowPopUp] = useState(false);
+
+  useEffect(() => {
+    const loggedUserJson = window.localStorage.getItem("loggedBloglistUser");
+    if (loggedUserJson) {
+      const user = JSON.parse(loggedUserJson);
+      setUser(user);
+    }
+  }, []);
 
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
       const user = await loginService.login({
-        username,
-        password,
+        username: loginUsername,
+        password: loginPassword,
       });
+      window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
       setUser(user);
-      setUsername("");
-      setPassword("");
+      setLoginUsername("");
+      setLoginPassword("");
       console.log(user);
     } catch (exception) {
       setError("Login failed: " + exception.message);
     }
   };
 
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    try {
+      const userData = {
+        username: registerUsername,
+        password: registerPassword,
+        email: registerEmail,
+      };
+      const response = await apiAxios.registerUser(userData);
+      console.log(response);
+      handleClosePopUp();
+    } catch (error) {
+      setError("Registration failed: " + error.message);
+    }
+  };
+
+  const handleRegisterClick = () => {
+    setIsRegistering(true);
+    setShowPopUp(true);
+  };
+
+  const handleClosePopUp = () => {
+    setShowPopUp(false);
+  };
+
   if (user === null) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="bg-white p-8 rounded-lg shadow-md w-80">
-          <h2 className="text-2xl font-bold mb-4">
-            Log in to application
-          </h2>
-          {error && (
-            <p className="text-red-500 mb-4">{error}</p>
-          )}
+          <h2 className="text-2xl font-bold mb-4">Log in to application</h2>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
           <form onSubmit={handleLogin}>
             <div className="mb-4">
-              <label
-                htmlFor="username"
-                className="block font-medium"
-              >
+              <label htmlFor="login-username" className="block font-medium">
                 Username
               </label>
               <input
                 type="text"
-                value={username}
+                value={loginUsername}
                 name="Username"
-                onChange={({ target }) =>
-                  setUsername(target.value)
-                }
-                id="username"
+                onChange={({ target }) => setLoginUsername(target.value)}
+                id="login-username"
                 className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
               />
             </div>
             <div className="mb-6">
-              <label
-                htmlFor="password"
-                className="block font-medium"
-              >
+              <label htmlFor="login-password" className="block font-medium">
                 Password
               </label>
               <input
                 type="password"
-                value={password}
+                value={loginPassword}
                 name="Password"
-                onChange={({ target }) =>
-                  setPassword(target.value)
-                }
-                id="password"
+                onChange={({ target }) => setLoginPassword(target.value)}
+                id="login-password"
                 className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
               />
             </div>
             <button
               type="submit"
               id="login-button"
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full"
             >
               Login
             </button>
           </form>
+          <div className="mt-3 flex flex-col items-center">
+            <h3>New user ?</h3>
+            <button
+              onClick={handleRegisterClick}
+              className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 mt-2"
+            >
+              Register
+            </button>
+          </div>
         </div>
+        {showPopUp && (
+          <div className="popup">
+            <div className="popup-content">
+              <span className="close" onClick={handleClosePopUp}>
+                &times;
+              </span>
+              <h2>Sign up</h2>
+              <form onSubmit={handleRegister}>
+                <div className="mb-4">
+                  <label htmlFor="register-email" className="block font-medium">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                    id="register-email"
+                    className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="register-username"
+                    className="block font-medium"
+                  >
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    value={registerUsername}
+                    onChange={(e) => setRegisterUsername(e.target.value)}
+                    id="register-username"
+                    className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="register-password"
+                    className="block font-medium"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                    id="register-password"
+                    className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full"
+                >
+                  Register
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

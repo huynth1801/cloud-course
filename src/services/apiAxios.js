@@ -11,4 +11,14 @@ const getProductsData = async () => {
   }
 };
 
-export default getProductsData;
+const registerUser = async (userData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/register`, userData)
+    return response.data
+  } catch (error) {
+    console.error('Error registering user:', error)
+    throw error;
+  }
+}
+
+export default {getProductsData, registerUser};
