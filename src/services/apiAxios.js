@@ -1,9 +1,24 @@
 import axios from "axios";
 const baseUrl = "http://localhost:3000";
 
+let token = null;
+
+const setToken = newToken => {
+  token = `Bearer ${newToken}`;
+  return token
+}
+
+
 const getProductsData = async () => {
+  if (!token) {
+    throw new Error("Token has not been set");
+  }
+  const config = {
+    headers: { Authorization: token },
+  }
+  console.log(config);
   try {
-    const response = await axios.get(`${baseUrl}/products`);
+    const response = await axios.get(`${baseUrl}/products`, config);
     return response.data;
   } catch (error) {
     console.error("Error fetching product data:", error);
@@ -21,4 +36,4 @@ const registerUser = async (userData) => {
   }
 }
 
-export default {getProductsData, registerUser};
+export default {getProductsData, registerUser, setToken};

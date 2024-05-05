@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
-import getProductsData from "../services/apiAxios";
+import apiAxios from "../services/apiAxios";
 
-const Products = () => {
+const Products = ({ token }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,7 +10,8 @@ const Products = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getProductsData();
+        apiAxios.setToken(token);
+        const data = await apiAxios.getProductsData(token);
         setProducts(data);
         setLoading(false);
       } catch (error) {
@@ -20,14 +21,14 @@ const Products = () => {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Error: {error.toString()}</div>;
   }
 
   return (
@@ -35,12 +36,7 @@ const Products = () => {
       <h2>Products List</h2>
       <ul className="flex justify-between">
         {products.map((product) => {
-          return (
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
-          );
+          return <ProductCard key={product.id} product={product} />;
         })}
       </ul>
     </div>

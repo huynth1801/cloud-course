@@ -18,12 +18,15 @@ function App() {
   const [error, setError] = useState(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [showPopUp, setShowPopUp] = useState(false);
+  const [token, setToken] = useState(null); // Sử dụng useState để lưu trữ token
 
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem("loggedBloglistUser");
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson);
       setUser(user);
+      setToken(user.token); // Cập nhật token khi user đã đăng nhập
+      apiAxios.setToken(user.token); // Cập nhật token trong axios
     }
   }, []);
 
@@ -38,7 +41,8 @@ function App() {
       setUser(user);
       setLoginUsername("");
       setLoginPassword("");
-      console.log(user);
+      setToken(user.token); // Cập nhật token khi đăng nhập thành công
+      apiAxios.setToken(user.token); // Cập nhật token trong axios
     } catch (exception) {
       setError("Login failed: " + exception.message);
     }
@@ -53,7 +57,6 @@ function App() {
         email: registerEmail,
       };
       const response = await apiAxios.registerUser(userData);
-      console.log(response);
       handleClosePopUp();
     } catch (error) {
       setError("Registration failed: " + error.message);
@@ -187,7 +190,7 @@ function App() {
   return (
     <div>
       <h2>Hello, {user["username"]}</h2>
-      <Products />
+      <Products token={token} />
     </div>
   );
 }
