@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import apiAxios from "../services/apiAxios";
+import Cart from "./Cart";
 
 const Products = ({ token }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+
+  const handleUpdateCart = (updatedCartItems) => {
+    setCartItems(updatedCartItems);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,6 +29,10 @@ const Products = ({ token }) => {
     fetchData();
   }, [token]);
 
+  const handleAddToCart = (product) => {
+    setCartItems([...cartItems, product]);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -36,9 +46,16 @@ const Products = ({ token }) => {
       <h2>Products List</h2>
       <ul className="flex justify-between">
         {products.map((product) => {
-          return <ProductCard key={product.id} product={product} />;
+          return (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAddToCart={handleAddToCart}
+            />
+          );
         })}
       </ul>
+      <Cart cartItems={cartItems} updateCart={handleUpdateCart} />
     </div>
   );
 };
