@@ -8,9 +8,20 @@ const Products = ({ token }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cartItems, setCartItems] = useState([]);
+  const [showPopUp, setShowPopUp] = useState(false);
+  const [isOrdered, setIsOrdered] = useState(false);
 
   const handleUpdateCart = (updatedCartItems) => {
     setCartItems(updatedCartItems);
+  };
+
+  const handleOrderSuccess = () => {
+    setIsOrdered(true);
+    setShowPopUp(true);
+    setTimeout(() => {
+      setShowPopUp(false);
+    }, 5000);
+    setCartItems([]);
   };
 
   useEffect(() => {
@@ -39,10 +50,7 @@ const Products = ({ token }) => {
       updatedCartItems[existingItemIndex].quantity += 1;
       setCartItems(updatedCartItems);
     } else {
-      setCartItems([
-        ...cartItems,
-        { ...product, quantity: 1 },
-      ]);
+      setCartItems([...cartItems, { ...product, quantity: 1 }]);
     }
   };
 
@@ -56,6 +64,14 @@ const Products = ({ token }) => {
 
   return (
     <div>
+      {showPopUp && (
+        <div className="fixed top-0 right-0 mt-4 mr-4 z-50">
+          <div className="bg-green-500 text-white p-4 rounded-lg shadow-md transform translate-x-50 transition-transform duration-500">
+            Order successfully!
+          </div>
+        </div>
+      )}
+
       <h2>Products List</h2>
       <ul className="flex justify-between">
         {products.map((product) => {
@@ -71,6 +87,8 @@ const Products = ({ token }) => {
       <Cart
         cartItems={cartItems}
         updateCart={handleUpdateCart}
+        token={token}
+        onOrderSuccess={handleOrderSuccess}
       />
     </div>
   );

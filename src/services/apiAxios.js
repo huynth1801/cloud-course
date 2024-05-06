@@ -16,7 +16,6 @@ const getProductsData = async () => {
   const config = {
     headers: { Authorization: token },
   }
-  console.log(config);
   try {
     const response = await axios.get(`${baseUrl}/products`, config);
     return response.data;
@@ -36,4 +35,21 @@ const registerUser = async (userData) => {
   }
 }
 
-export default {getProductsData, registerUser, setToken};
+const postOrder = async (orderData) => {
+  if (!token) {
+    throw new Error("Token has not been set");
+  }
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  try {
+    const response = await axios.post(`${baseUrl}/orders`, orderData, config);
+    return response.data;
+  } catch (error){
+    console.error('Error post order', error.message);
+    throw error;
+  } 
+}
+
+export default {getProductsData, registerUser, setToken, postOrder};

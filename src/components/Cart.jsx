@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
+import apiAxios from "../services/apiAxios";
 
-const Cart = ({ cartItems, updateCart }) => {
+const Cart = ({ cartItems, updateCart, token, onOrderSuccess }) => {
   const taxRate = 0.1;
   const [quantities, setQuantities] = useState({});
+  const [isOrdering, setIsOrdering] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // Tạo một đối tượng quantities mới từ giỏ hàng
@@ -33,9 +36,7 @@ const Cart = ({ cartItems, updateCart }) => {
   };
 
   const handleRemoveItem = (id) => {
-    const updatedCartItems = cartItems.filter(
-      (item) => item.id !== id
-    );
+    const updatedCartItems = cartItems.filter((item) => item.id !== id);
     setQuantities((prevQuantities) => {
       const updatedQuantities = { ...prevQuantities };
       delete updatedQuantities[id];
@@ -45,12 +46,44 @@ const Cart = ({ cartItems, updateCart }) => {
   };
 
   const total = cartItems.reduce(
-    (acc, { price, id }) =>
-      acc + price * (quantities[id] || 1),
+    (acc, { price, id }) => acc + price * (quantities[id] || 1),
     0
   );
   const taxAmount = total * taxRate;
   const totalAfterTax = total + taxAmount;
+
+  const handleOrder = async () => {
+    setIsOrdering(true);
+    const orderProductName = cartItems.reduce((acc, item) => {
+      return acc + item.name;
+    }, "");
+
+    const quantityProduct = cartItems.reduce((acc, item) => {
+      return acc + item.quantity;
+    }, 0);
+
+    const orderData = {
+      productName: orderProductName,
+      quantity: quantityProduct,
+      amount: totalAfterTax,
+    };
+    try {
+      apiAxios.setToken(token);
+      const response = await apiAxios.postOrder(orderData);
+      updateCart([]);
+      onOrderSuccess();
+    } catch (error) {
+      console.error("Error placing orders", error);
+      setError(error);
+      throw error;
+    } finally {
+      setIsOrdering(false);
+    }
+  };
+
+  if (error) {
+    return <div>Error: {error.toString()}</div>;
+  }
 
   return (
     <div className="flex justify-center">
@@ -59,37 +92,24 @@ const Cart = ({ cartItems, updateCart }) => {
           <h2 className="font-bold text-xl mb-2">Cart</h2>
           <ul>
             {cartItems.map(({ id, name, price }) => (
-              <li
-                key={id}
-                className="flex justify-between py-2"
-              >
+              <li key={id} className="flex justify-between py-2">
                 <div>{name}</div>
                 <div className="flex justify-between items-center">
                   <button
-                    onClick={() =>
-                      handleDecreaseQuantity(id)
-                    }
+                    onClick={() => handleDecreaseQuantity(id)}
                     className="px-2 py-1 mr-1 border border-gray-300 bg-gray-100 rounded-md"
                   >
                     -
                   </button>
-                  <p className="px-2 font-semibold">
-                    {quantities[id] || 1}
-                  </p>
+                  <p className="px-2 font-semibold">{quantities[id] || 1}</p>
                   <button
-                    onClick={() =>
-                      handleIncreaseQuantity(id)
-                    }
+                    onClick={() => handleIncreaseQuantity(id)}
                     className="px-2 py-1 ml-1 border border-gray-300 bg-gray-100 rounded-md mx-4"
                   >
                     +
                   </button>
-                  <p className="px-2">
-                    ${price * (quantities[id] || 1)}
-                  </p>
-                  <button
-                    onClick={() => handleRemoveItem(id)}
-                  >
+                  <p className="px-2">${price * (quantities[id] || 1)}</p>
+                  <button onClick={() => handleRemoveItem(id)}>
                     <FaRegTrashAlt />
                   </button>
                 </div>
@@ -99,9 +119,7 @@ const Cart = ({ cartItems, updateCart }) => {
         </div>
         <div className="px-6 py-4">
           <div className="flex justify-between">
-            <span className="font-semibold">
-              Tax ({taxRate * 100}%)
-            </span>
+            <span className="font-semibold">Tax ({taxRate * 100}%)</span>
             <span>${taxAmount.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
@@ -110,8 +128,14 @@ const Cart = ({ cartItems, updateCart }) => {
           </div>
         </div>
         <div className="justify-center flex">
-          <button className="font-bold bg-blue-400 p-2 m-2 rounded-md w-40 hover:opacity-90 hover:text-white">
-            Order
+          <button
+            onClick={handleOrder}
+            className={`font-bold bg-blue-400 p-2 m-2 rounded-md w-40 hover:opacity-90 hover:text-white ${
+              isOrdering && "opacity-50 cursor-not-allowed"
+            }`}
+            disabled={isOrdering}
+          >
+            {isOrdering ? "Processing..." : "Order"}
           </button>
         </div>
       </div>

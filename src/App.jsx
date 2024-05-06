@@ -11,11 +11,8 @@ function App() {
 
   // Trạng thái cho form đăng ký
   const [registerEmail, setRegisterEmail] = useState("");
-  const [registerUsername, setRegisterUsername] =
-    useState("");
-  const [registerPassword, setRegisterPassword] =
-    useState("");
-  const [domain, setDomain] = useState("");
+  const [registerUsername, setRegisterUsername] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
 
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
@@ -24,9 +21,7 @@ function App() {
   const [token, setToken] = useState(null); // Sử dụng useState để lưu trữ token
 
   useEffect(() => {
-    const loggedUserJson = window.localStorage.getItem(
-      "loggedBloglistUser"
-    );
+    const loggedUserJson = window.localStorage.getItem("loggedBloglistUser");
     if (loggedUserJson) {
       const user = JSON.parse(loggedUserJson);
       setUser(user);
@@ -42,10 +37,7 @@ function App() {
         username: loginUsername,
         password: loginPassword,
       });
-      window.localStorage.setItem(
-        "loggedBloglistUser",
-        JSON.stringify(user)
-      );
+      window.localStorage.setItem("loggedBloglistUser", JSON.stringify(user));
       setUser(user);
       setLoginUsername("");
       setLoginPassword("");
@@ -63,11 +55,8 @@ function App() {
         username: registerUsername,
         password: registerPassword,
         email: registerEmail,
-        domain: domain,
       };
-      const response = await apiAxios.registerUser(
-        userData
-      );
+      const response = await apiAxios.registerUser(userData);
       handleClosePopUp();
     } catch (error) {
       setError("Registration failed: " + error.message);
@@ -87,45 +76,31 @@ function App() {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="bg-white p-8 rounded-lg shadow-md w-80">
-          <h2 className="text-2xl font-bold mb-4">
-            Log in to application
-          </h2>
-          {error && (
-            <p className="text-red-500 mb-4">{error}</p>
-          )}
+          <h2 className="text-2xl font-bold mb-4">Log in to application</h2>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
           <form onSubmit={handleLogin}>
             <div className="mb-4">
-              <label
-                htmlFor="login-username"
-                className="block font-medium"
-              >
+              <label htmlFor="login-username" className="block font-medium">
                 Username
               </label>
               <input
                 type="text"
                 value={loginUsername}
                 name="Username"
-                onChange={({ target }) =>
-                  setLoginUsername(target.value)
-                }
+                onChange={({ target }) => setLoginUsername(target.value)}
                 id="login-username"
                 className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
               />
             </div>
             <div className="mb-6">
-              <label
-                htmlFor="login-password"
-                className="block font-medium"
-              >
+              <label htmlFor="login-password" className="block font-medium">
                 Password
               </label>
               <input
                 type="password"
                 value={loginPassword}
                 name="Password"
-                onChange={({ target }) =>
-                  setLoginPassword(target.value)
-                }
+                onChange={({ target }) => setLoginPassword(target.value)}
                 id="login-password"
                 className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
               />
@@ -151,45 +126,20 @@ function App() {
         {showPopUp && (
           <div className="popup">
             <div className="popup-content">
-              <span
-                className="close"
-                onClick={handleClosePopUp}
-              >
+              <span className="close" onClick={handleClosePopUp}>
                 &times;
               </span>
               <h2>Sign up</h2>
               <form onSubmit={handleRegister}>
                 <div className="mb-4">
-                  <label
-                    htmlFor="register-email"
-                    className="block font-medium"
-                  >
+                  <label htmlFor="register-email" className="block font-medium">
                     Email
                   </label>
                   <input
                     type="email"
                     value={registerEmail}
-                    onChange={(e) =>
-                      setRegisterEmail(e.target.value)
-                    }
+                    onChange={(e) => setRegisterEmail(e.target.value)}
                     id="register-email"
-                    className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="register-domain"
-                    className="block font-medium"
-                  >
-                    Domain
-                  </label>
-                  <input
-                    type="text"
-                    value={domain}
-                    onChange={(e) =>
-                      setDomain(e.target.value)
-                    }
-                    id="register-domain"
                     className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
                   />
                 </div>
@@ -203,9 +153,7 @@ function App() {
                   <input
                     type="text"
                     value={registerUsername}
-                    onChange={(e) =>
-                      setRegisterUsername(e.target.value)
-                    }
+                    onChange={(e) => setRegisterUsername(e.target.value)}
                     id="register-username"
                     className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
                   />
@@ -220,9 +168,7 @@ function App() {
                   <input
                     type="password"
                     value={registerPassword}
-                    onChange={(e) =>
-                      setRegisterPassword(e.target.value)
-                    }
+                    onChange={(e) => setRegisterPassword(e.target.value)}
                     id="register-password"
                     className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
                   />
