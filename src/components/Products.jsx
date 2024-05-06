@@ -30,7 +30,20 @@ const Products = ({ token }) => {
   }, [token]);
 
   const handleAddToCart = (product) => {
-    setCartItems([...cartItems, product]);
+    const existingItemIndex = cartItems.findIndex(
+      (item) => item.id === product.id
+    );
+
+    if (existingItemIndex !== -1) {
+      const updatedCartItems = [...cartItems];
+      updatedCartItems[existingItemIndex].quantity += 1;
+      setCartItems(updatedCartItems);
+    } else {
+      setCartItems([
+        ...cartItems,
+        { ...product, quantity: 1 },
+      ]);
+    }
   };
 
   if (loading) {
@@ -55,7 +68,10 @@ const Products = ({ token }) => {
           );
         })}
       </ul>
-      <Cart cartItems={cartItems} updateCart={handleUpdateCart} />
+      <Cart
+        cartItems={cartItems}
+        updateCart={handleUpdateCart}
+      />
     </div>
   );
 };
