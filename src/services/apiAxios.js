@@ -3,11 +3,10 @@ const baseUrl = "http://localhost:3000";
 
 let token = null;
 
-const setToken = newToken => {
+const setToken = (newToken) => {
   token = `Bearer ${newToken}`;
-  return token
-}
-
+  return token;
+};
 
 const getProductsData = async () => {
   if (!token) {
@@ -15,9 +14,12 @@ const getProductsData = async () => {
   }
   const config = {
     headers: { Authorization: token },
-  }
+  };
   try {
-    const response = await axios.get(`${baseUrl}/products`, config);
+    const response = await axios.get(
+      `${baseUrl}/products`,
+      config
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching product data:", error);
@@ -27,13 +29,16 @@ const getProductsData = async () => {
 
 const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${baseUrl}/register`, userData)
-    return response.data
+    const response = await axios.post(
+      `${baseUrl}/register`,
+      userData
+    );
+    return response.data;
   } catch (error) {
-    console.error('Error registering user:', error)
+    console.error("Error registering user:", error);
     throw error;
   }
-}
+};
 
 const postOrder = async (orderData) => {
   if (!token) {
@@ -41,15 +46,44 @@ const postOrder = async (orderData) => {
   }
   const config = {
     headers: { Authorization: token },
-  }
+  };
 
   try {
-    const response = await axios.post(`${baseUrl}/orders`, orderData, config);
+    const response = await axios.post(
+      `${baseUrl}/orders`,
+      orderData,
+      config
+    );
     return response.data;
-  } catch (error){
-    console.error('Error post order', error.message);
+  } catch (error) {
+    console.error("Error post order", error.message);
     throw error;
-  } 
-}
+  }
+};
 
-export default {getProductsData, registerUser, setToken, postOrder};
+const getOrder = async () => {
+  if (!token) {
+    throw new Error("Token has not been set");
+  }
+  const config = {
+    headers: { Authorization: token },
+  };
+  try {
+    const response = await axios.get(
+      `${baseUrl}/orders/:tenandId/:userId`,
+      config
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching orders data:", error);
+    throw error;
+  }
+};
+
+export default {
+  getProductsData,
+  registerUser,
+  setToken,
+  postOrder,
+  getOrder,
+};
