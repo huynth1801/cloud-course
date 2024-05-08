@@ -15,6 +15,7 @@ function App() {
     useState("");
   const [registerPassword, setRegisterPassword] =
     useState("");
+  const [domain, setDomain] = useState("");
 
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
@@ -171,6 +172,23 @@ function App() {
                       setRegisterEmail(e.target.value)
                     }
                     id="register-email"
+                    className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="register-domain"
+                    className="block font-medium"
+                  >
+                    Domain
+                  </label>
+                  <input
+                    type="text"
+                    value={domain}
+                    onChange={(e) =>
+                      setDomain(e.target.value)
+                    }
+                    id="register-domain"
                     className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-500"
                   />
                 </div>
