@@ -23,6 +23,21 @@ function App() {
   const [showPopUp, setShowPopUp] = useState(false);
   const [token, setToken] = useState(null); // Sử dụng useState để lưu trữ token
 
+  // useEffect(() => {
+  //   const getAccessToken = JSON.parse(
+  //     window.localStorage.getItem("loggedBloglistUser")
+  //   );
+  //   console.log(getAccessToken.accessToken);
+  //   const updatedUser = {
+  //     ...user,
+  //     accessToken: newAccessToken,
+  //   };
+  //   window.localStorage.setItem(
+  //     "loggedBloglistUser",
+  //     JSON.stringify(updatedUser)
+  //   );
+  // }, []);
+
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem(
       "loggedBloglistUser"
@@ -63,6 +78,7 @@ function App() {
         username: registerUsername,
         password: registerPassword,
         email: registerEmail,
+        domain: domain,
       };
       const response = await apiAxios.registerUser(
         userData

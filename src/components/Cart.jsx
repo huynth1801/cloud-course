@@ -19,7 +19,6 @@ const Cart = ({
   const [orderHistory, setOrderHistory] = useState([]);
   const [showOrderHistory, setShowOrderHistory] =
     useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const newQuantities = {};
@@ -118,7 +117,6 @@ const Cart = ({
 
   const handleToggleOrderHistory = () => {
     setShowOrderHistory(!showOrderHistory);
-    navigate("/orders");
   };
 
   if (error) {
